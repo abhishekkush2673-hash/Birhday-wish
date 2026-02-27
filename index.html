@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, My Love</title>
+    <style>
+        /* 
+         * DESIGN SYSTEM 2026 
+         * Theme: Midnight Glass & Neon Heartbeat
+         */
+        :root {
+            --bg-color: #050505;
+            --text-color: #ffffff;
+            --accent-primary: #ff2e63; /* Passion Pink */
+            --accent-secondary: #08d9d6; /* Cyber Cyan */
+            --glass-surface: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --blur-amount: 20px;
+            --font-display: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --easing: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-display);
+            overflow-x: hidden;
+            width: 100vw;
+            min-height: 100vh;
+            cursor: none; /* Custom cursor implementation */
+        }
+
+        /* Ambient Noise Texture for Cinematic Feel */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.05;
+            background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="1"/%3E%3C/svg%3E');
+        }
+
+        /* Custom Cursor */
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 10000;
+            pointer-events: none;
+        }
+
+        .cursor-dot {
+            width: 5px;
+            height: 5px;
+            background-color: var(--accent-primary);
+        }
+
+        .cursor-outline {
+            width: 30px;
+            height: 30px;
+            border: 1px solid var(--accent-primary);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+
+        body:hover .cursor-outline {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 46, 99, 0.1);
+        }
+
+        /* --- SECTION 1: THE GATE (ENTER SCREEN) --- */
+        #enter-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 5000;
+            transition: opacity 1.5s var(--easing);
+        }
+
+        .enter-btn {
+            background: transparent;
+            border: 1px solid var(--accent-secondary);
+            color: var(--accent-secondary);
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .enter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--accent-secondary);
+            transition: left 0.5s var(--easing);
+            z-index: -1;
+        }
+
+        .enter-btn:hover {
+            color: #000;
+            box-shadow: 0 0 20px var(--accent-secondary);
+        }
+
+        .enter-btn:hover::before {
+            left: 0;
+        }
+
+        /* --- SECTION 2: HERO (CANVAS & TYPOGRAPHY) --- */
+        #main-content {
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        #hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            perspective: 1000px;
+        }
+
+        canvas#particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .hero-text h1 {
+            font-size: clamp(3rem, 8vw, 8rem);
+            font-weight: 900;
+            line-height: 1.1;
+            background: linear-gradient(to right, #fff, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideUp 1.5s var(--easing) forwards 0.5s;
+        }
+
+        .hero-text h2 {
+            font-size: clamp(1rem, 3vw, 2rem);
+            font-weight: 300;
+            color: var(--accent-primary);
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 1.5s var(--easing) forwards 1s;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            opacity: 0.5;
+        }
+
+        /* --- SECTION 3: THE BENTO GRID (REASONS) --- */
+        #gallery {
+            padding: 100px 5%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 50px;
+            text-align: center;
+            background: linear-gradient(90deg, var(--accent-secondary), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--glass-surface);
+            backdrop-filter: blur(var(--blur-amount));
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s var(--easing), box-shadow 0.4s ease;
+            opacity: 0; /* JS will reveal */
+            transform: translateY(30px);
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            border-color: rgba(255, 46, 99, 0.3);
+        }
+
+        .card h3 {
+            color: var(--accent-primary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .card p {
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        /* Large card span */
+        .card.wide {
+            grid-column: span 2;
+        }
+        
+        @media (max-width: 768px) {
+            .card.wide { grid-column: span 1; }
+        }
+
+        /* --- SECTION 4: THE LETTER --- */
+        #letter {
+            padding: 100px 10%;
+            background: radial-gradient(circle at center, rgba(8, 217, 214, 0.05) 0%, transparent 70%);
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .letter-content {
+            max-width: 800px;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            text-align: center;
+            position: relative;
+        }
+
+        .highlight {
+            color: var(--accent-primary);
+            font-weight: bold;
+            position: relative;
+            display: inline-block;
+        }
+
+        /* --- SECTION 5: INTERACTIVE CAKE --- */
+        #cake-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .cake-container {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .cake-container:active {
+            transform: scale(0.95);
+        }
+
+        .flame {
+            width: 20px;
+            height: 30px;
+            background: linear-gradient(#ffeb3b, #ff9800);
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 20px #ff9800, 0 0 40px #ffeb3b;
+            animation: flicker 0.5s infinite alternate;
+            opacity: 1;
+            transition: opacity 1s ease;
+        }
+
+        .candle {
+            width: 15px;
+            height: 50px;
+            background: #fff;
+            margin: 0 auto;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .cake-base {
+            width: 150px;
+            height: 80px;
+            background: linear-gradient(to right, #ff2e63, #c21342);
+            border-radius: 10px 10px 0 0;
+            position: relative;
+            margin-top: 5px;
+            box-shadow: 0 0 50px rgba(255, 46, 99, 0.2);
+        }
+        
+        .cake-layer-2 {
+            width: 180px;
+            height: 40px;
+            background: #444;
+            margin: 0 auto;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .instruction {
+            margin-top: 50px;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #888;
+            transition: all 0.5s;
+        }
+
+        .hidden-wish {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 2s ease;
+        }
+        
+        .hidden-wish h2 {
+            font-size: 3rem;
+            color: var(--accent-secondary);
+            text-shadow: 0 0 20px var(--accent-secondary);
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateX(-50%) translateY(0);}
+            40% {transform: translateX(-50%) translateY(-10px);}
+            60% {transform: translateX(-50%) translateY(-5px);}
+        }
+
+        @keyframes flicker {
+            0% {transform: translateX(-50%) scale(1);}
+            100% {transform: translateX(-50%) scale(1.1) rotate(2deg);}
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Noise Texture -->
+    <div class="noise-overlay"></div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot" data-cursor-dot></div>
+    <div class="cursor-outline" data-cursor-outline></div>
+
+    <!-- 1. The Gate -->
+    <section id="enter-screen">
+        <!-- CUSTOMIZE HERE: Enter button text -->
+        <button class="enter-btn" id="enterBtn">Unlock Experience</button>
+    </section>
+
+    <!-- Main Content Wrapper -->
+    <main id="main-content" style="display: none;">
+        
+        <!-- 2. Hero Section -->
+        <section id="hero">
+            <canvas id="particle-canvas"></canvas>
+            <div class="hero-text">
+                <!-- CUSTOMIZE HERE: Birthday Message -->
+                <h2>It's Your Day</h2>
+                <h1>Happy Birthday<br><span style="color: var(--accent-primary)">Beautiful</span></h1>
+            </div>
+            <div class="scroll-indicator">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
+            </div>
+        </section>
+
+        <!-- 3. The Gallery (Reasons I love you) -->
+        <section id="gallery">
+            <!-- CUSTOMIZE HERE: Title -->
+            <div class="section-title">The Coordinates of My Heart</div>
+            
+            <div class="bento-grid">
+                <!-- CUSTOMIZE HERE: Card 1 -->
+                <div class="card wide reveal-on-scroll">
+                    <h3>My Safe Haven</h3>
+                    <p>In a world of constant noise and chaos, your presence is the only silence I need. You are the calm in my storm and the anchor that keeps me grounded.</p>
+                </div>
+                
+                <!-- CUSTOMIZE HERE: Card 2 -->
+                <div class="card reveal-on-scroll">
+                    <h3>Your Resilience</h3>
+                    <p>Watching you tackle life's challenges with such grace and fire inspires me every single day. You are a force of nature.</p>
+                </div>
+
+                <!-- CUSTOMIZE HERE: Card 3 -->
+                <div class="card reveal-on-scroll">
+                    <h3>Your Laugh</h3>
+                    <p>It is literally my favorite sound in the universe. It heals parts of me I didn't know were broken.</p>
+                </div>
+
+                <!-- CUSTOMIZE HERE: Card 4 -->
+                <div class="card wide reveal-on-scroll">
+                    <h3>Our Future</h3>
+                    <p>Every birthday of yours is just another milestone in the adventure I never want to end. I can't wait to see what 2026 and beyond holds for us.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. The Letter -->
+        <section id="letter">
+            <div class="letter-content reveal-on-scroll">
+                <!-- CUSTOMIZE HERE: The Letter -->
+                <p>
+                    To the one who holds my heart,<br><br>
+                    Another year around the sun, and you only shine brighter. 
+                    I wanted to create something digital that feels as <span class="highlight">timeless</span> as you are. 
+                    Thank you for being my partner, my best friend, and my greatest love.
+                    <br><br>
+                    May this year bring you as much joy as you bring into my life simply by existing.
+                </p>
+            </div>
+        </section>
+
+        <!-- 5. Interactive Finale -->
+        <section id="cake-section">
+            <div class="hidden-wish" id="wish-message">
+                <h2>I Love You.</h2>
+            </div>
+
+            <div class="cake-container" id="cake-interaction">
+                <div class="flame" id="flame"></div>
+                <div class="candle"></div>
+                <div class="cake-layer-2"></div>
+                <div class="cake-base"></div>
+            </div>
+            
+            <p class="instruction" id="instruction-text">Click & Hold to Make a Wish</p>
+        </section>
+
+    </main>
+
+    <script>
+        // --- 1. CURSOR LOGIC ---
+        const cursorDot = document.querySelector('[data-cursor-dot]');
+        const cursorOutline = document.querySelector('[data-cursor-outline]');
+
+        window.addEventListener('mousemove', function(e) {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            // Dot follows instantly
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+
+            // Outline follows with slight lag/animation
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+
+        // --- 2. ENTER SEQUENCE ---
+        const enterBtn = document.getElementById('enterBtn');
+        const enterScreen = document.getElementById('enter-screen');
+        const mainContent = document.getElementById('main-content');
+
+        enterBtn.addEventListener('click', () => {
+            enterScreen.style.opacity = '0';
+            setTimeout(() => {
+                enterScreen.style.display = 'none';
+                mainContent.style.display = 'block';
+                // Trigger reflow
+                void mainContent.offsetWidth; 
+                mainContent.style.opacity = '1';
+                initParticles(); // Start high-performance animations only after entry
+            }, 1000);
+        });
+
+        // --- 3. PARTICLE SYSTEM (CANVAS) ---
+        function initParticles() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            let particlesArray;
+
+            // Handle Mouse Interaction
+            let mouse = { x: null, y: null, radius: 150 };
+
+            window.addEventListener('mousemove', (event) => {
+                mouse.x = event.x;
+                mouse.y = event.y;
+            });
+
+            class Particle {
+                constructor(x, y, directionX, directionY, size, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.directionX = directionX;
+                    this.directionY = directionY;
+                    this.size = size;
+                    this.color = color;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                    ctx.fillStyle = this.color;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = this.color;
+                    ctx.fill();
+                }
+                update() {
+                    if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+                    if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+
+                    // Mouse Interaction
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx*dx + dy*dy);
+
+                    if (distance < mouse.radius + this.size){
+                        if (mouse.x < this.x && this.x < canvas.width - this.size * 10) this.x += 3;
+                        if (mouse.x > this.x && this.x > this.size * 10) this.x -= 3;
+                        if (mouse.y < this.y && this.y < canvas.height - this.size * 10) this.y += 3;
+                        if (mouse.y > this.y && this.y > this.size * 10) this.y -= 3;
+                    }
+
+                    this.x += this.directionX;
+                    this.y += this.directionY;
+                    this.draw();
+                }
+            }
+
+            function connect() {
+                let opacityValue = 1;
+                for (let a = 0; a < particlesArray.length; a++) {
+                    for (let b = a; b < particlesArray.length; b++) {
+                        let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) + 
+                                       ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                        if (distance < (canvas.width/7) * (canvas.height/7)) {
+                            opacityValue = 1 - (distance/20000);
+                            ctx.strokeStyle = 'rgba(255, 46, 99,' + opacityValue + ')'; 
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function init() {
+                particlesArray = [];
+                let numberOfParticles = (canvas.height * canvas.width) / 9000;
+                for (let i = 0; i < numberOfParticles; i++) {
+                    let size = (Math.random() * 2) + 1;
+                    let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                    let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                    let directionX = (Math.random() * 2) - 1;
+                    let directionY = (Math.random() * 2) - 1;
+                    let color = '#08d9d6';
+
+                    particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+                }
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+                ctx.clearRect(0,0,innerWidth, innerHeight);
+                for (let i = 0; i < particlesArray.length; i++) {
+                    particlesArray[i].update();
+                }
+                connect();
+            }
+
+            init();
+            animate();
+            
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                init();
+            });
+        }
+
+        // --- 4. SCROLL ANIMATIONS (INTERSECTION OBSERVER) ---
+        const observerOptions = {
+            threshold: 0.2
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+
+        // --- 5. CAKE INTERACTION ---
+        const cake = document.getElementById('cake-interaction');
+        const flame = document.getElementById('flame');
+        const instruction = document.getElementById('instruction-text');
+        const wishMessage = document.getElementById('wish-message');
+        
+        let holdTimer;
+
+        cake.addEventListener('mousedown', () => {
+            instruction.innerText = "Keep Holding...";
+            // Scale down flame
+            flame.style.transform = "translateX(-50%) scale(0.6)";
+            
+            holdTimer = setTimeout(() => {
+                // Blow out logic
+                flame.style.opacity = '0';
+                instruction.style.opacity = '0';
+                cake.style.pointerEvents = 'none';
+                
+                // Confetti explosion (using simple canvas overlay logic or CSS)
+                launchConfetti();
+
+                // Show hidden message
+                setTimeout(() => {
+                    wishMessage.style.opacity = '1';
+                    wishMessage.style.pointerEvents = 'auto';
+                }, 500);
+
+            }, 2000); // Hold for 2 seconds
+        });
+
+        cake.addEventListener('mouseup', () => {
+            clearTimeout(holdTimer);
+            if (flame.style.opacity !== '0') {
+                instruction.innerText = "Click & Hold to Make a Wish";
+                flame.style.transform = "translateX(-50%) scale(1)";
+            }
+        });
+        
+        // Touch support for mobile
+        cake.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            instruction.innerText = "Keep Holding...";
+            flame.style.transform = "translateX(-50%) scale(0.6)";
+            holdTimer = setTimeout(() => {
+                flame.style.opacity = '0';
+                instruction.style.opacity = '0';
+                cake.style.pointerEvents = 'none';
+                launchConfetti();
+                setTimeout(() => {
+                    wishMessage.style.opacity = '1';
+                }, 500);
+            }, 2000);
+        });
+
+        cake.addEventListener('touchend', () => {
+            clearTimeout(holdTimer);
+            if (flame.style.opacity !== '0') {
+                instruction.innerText = "Hold to Make a Wish";
+                flame.style.transform = "translateX(-50%) scale(1)";
+            }
+        });
+
+        // Simple Confetti Function
+        function launchConfetti() {
+            const colors = ['#ff2e63', '#08d9d6', '#ffffff'];
+            for(let i=0; i<100; i++) {
+                const confetto = document.createElement('div');
+                confetto.style.position = 'absolute';
+                confetto.style.width = '10px';
+                confetto.style.height = '10px';
+                confetto.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetto.style.top = '50%';
+                confetto.style.left = '50%';
+                confetto.style.borderRadius = '50%';
+                confetto.style.pointerEvents = 'none';
+                document.getElementById('cake-section').appendChild(confetto);
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 2 + Math.random() * 5;
+                const tx = Math.cos(angle) * 300 * Math.random();
+                const ty = Math.sin(angle) * 300 * Math.random();
+
+                confetto.animate([
+                    { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+                    { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 1000 + Math.random() * 1000,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                    fill: 'forwards'
+                });
+            }
+        }
+
+    </script>
+</body>
+</html>
